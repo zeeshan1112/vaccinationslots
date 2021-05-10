@@ -1,0 +1,19 @@
+{
+  "name": "vaccinationslots",
+  "version": "1.0.0",
+  "description": "This project searches for slot for covid vaccination",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeeshan1112/vaccinationslots.git"
+  },
+  "author": "zeeshan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zeeshan1112/vaccinationslots/issues"
+  },
+  "homepage": "https://github.com/zeeshan1112/vaccinationslots#readme"
+}
