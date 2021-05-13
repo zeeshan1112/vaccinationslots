@@ -1,7 +1,7 @@
 var express = require("express");
 var app     = express();
 var path    = require("path");
-
+const port = process.env.PORT || 3000;
 app.use('/css', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/css')))
 app.use('/js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')))
 app.use('/js', express.static(path.join(__dirname, 'node_modules/jquery/dist')))
@@ -12,5 +12,5 @@ app.get('/',function(req,res){
 });
 
 app.listen(3000, () => {
-    console.log('Listening on port ' + 3000);
+    console.log('Listening on port ' + port);
   });
