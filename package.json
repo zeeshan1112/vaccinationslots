@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/zeeshan1112/vaccinationslots/issues"
   },
-  "homepage": "https://github.com/zeeshan1112/vaccinationslots#readme"
+  "homepage": "https://github.com/zeeshan1112/vaccinationslots#readme",
+  "dependencies": {
+    "bootstrap": "^3.4.1",
+    "express": "^4.17.1",
+    "jquery": "^3.6.0"
+  }
 }
