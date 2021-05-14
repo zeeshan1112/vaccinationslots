@@ -23,7 +23,8 @@ var VaccineSlots = function() {};
 
 async function searchByDistrict() {
     const minSlots = Number(document.getElementById("minslots").value);
-    document.getElementById("available").innerHTML = "Checking availability for " + minSlots + " slots..."
+    document.getElementById("available").innerHTML = "Checking availability for " + minSlots + " slots...";
+    $("#slotTable").show();
     let vaccines = [];
     if (document.getElementById("covishield").checked) {
         vaccines.push("COVISHIELD");
