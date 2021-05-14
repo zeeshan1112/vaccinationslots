@@ -19,31 +19,15 @@ $(document).ready(function() {
         }
     })
 });
-var VaccineSlots = function() {};
 
-async function searchByDistrict() {
-    const minSlots = Number(document.getElementById("minslots").value);
+async function searchSlots(url) {
+    var oValues = getInputValues();
+    const minSlots = oValues.userMinSlots;
     document.getElementById("available").innerHTML = "Checking availability for " + minSlots + " slots...";
     $("#slotTable").show();
-    let vaccines = [];
-    if (document.getElementById("covishield").checked) {
-        vaccines.push("COVISHIELD");
-    }
-    if (document.getElementById("covaxin").checked) {
-        vaccines.push("COVAXIN");
-    }
-    let fees = [];
-    if (document.getElementById("free").checked) {
-        fees.push("Free");
-    }
-    if (document.getElementById("paid").checked) {
-        fees.push("Paid");
-    }
-    var minAge = document.getElementById("minage").value;
-    var districtCode = document.getElementById("select-district").value;
-    var date = new Date().toLocaleDateString().replaceAll("/", "-");
-    var baseUrl = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?";
-    var url = baseUrl + "district_id=" + districtCode + "&date=" + date;
+    var vaccines = oValues.selectedVaccines;
+    var fees = oValues.selectedFeeType;
+    var minAge = oValues.selectedMinAge;
     var response = httpGet(url);
     try {
         var response = JSON.parse(response);
@@ -54,7 +38,6 @@ async function searchByDistrict() {
                         if (session.min_age_limit == minAge && session.available_capacity >= minSlots && vaccines.indexOf(session.vaccine) !== -1) {
                             var audio = new Audio('https://media.geeksforgeeks.org/wp-content/uploads/20190531135120/beep.mp3');
                             audio.play();
-
                             var fee = center.vaccine_fees ? center.vaccine_fees[0].fee : 0;
                             var vaccine = center.vaccine_fees ? center.vaccine_fees[0].vaccine : session.vaccine;
                             var aData = [center.name, session.date, session.available_capacity, vaccine, session.min_age_limit, fee, center.address, center.district_name, center.fee_type];
@@ -71,15 +54,23 @@ async function searchByDistrict() {
     for (var i = 0; i < tableLength; i++) {
         document.getElementById("vaccine-table").deleteRow(1);
     }
-    searchByDistrict();
-};
-
-VaccineSlots.prototype.searchByPin = function() {
-
+    searchSlots(url);
 };
 
 function checkSlots() {
-    searchByDistrict();
+    var url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/";
+    var date = new Date().toLocaleDateString().replaceAll("/", "-");
+    if (document.getElementById("radio-district").checked) {
+        // if search is by district
+        var districtCode = document.getElementById("select-district").value;
+        url = url + "calendarByDistrict?district_id=" + districtCode;
+    } else {
+        //if search is by pincode
+        var pinCode = document.getElementById("pin").value;
+        url = url + "calendarByPin?pincode=" + pinCode;
+    }
+    url = url + "&date=" + date;
+    searchSlots(url);
 }
 
 function processCsvData(allText) {
@@ -126,13 +117,38 @@ function addToTable(aData) {
 }
 
 function doColorCoding(availableCapacity, tr) {
-    if(availableCapacity < 5) {
+    if (availableCapacity < 5) {
         tr.setAttribute("class", "danger");
-    } else if(availableCapacity >=5 && availableCapacity < 20) {
+    } else if (availableCapacity >= 5 && availableCapacity < 20) {
         tr.setAttribute("class", "warning");
-    } else if(availableCapacity >= 20) {
+    } else if (availableCapacity >= 20) {
         tr.setAttribute("class", "success");
     }
+}
+
+function getInputValues() {
+    const minSlots = Number(document.getElementById("minslots").value);
+    let oValues = {};
+    let vaccines = [];
+    let fees = [];
+    if (document.getElementById("covishield").checked) {
+        vaccines.push("COVISHIELD");
+    }
+    if (document.getElementById("covaxin").checked) {
+        vaccines.push("COVAXIN");
+    }
+    if (document.getElementById("free").checked) {
+        fees.push("Free");
+    }
+    if (document.getElementById("paid").checked) {
+        fees.push("Paid");
+    }
+    var minAge = document.getElementById("minage").value;
+    oValues.userMinSlots = minSlots;
+    oValues.selectedVaccines = vaccines;
+    oValues.selectedFeeType = fees;
+    oValues.selectedMinAge = minAge;
+    return oValues;
 }
 
 function httpGet(url) {
