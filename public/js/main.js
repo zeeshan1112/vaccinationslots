@@ -122,7 +122,17 @@ function addToTable(aData) {
         td = tr.insertCell(i);
         td.innerHTML = aData[i];
     }
+    doColorCoding(aData[2], tr);
+}
 
+function doColorCoding(availableCapacity, tr) {
+    if(availableCapacity < 5) {
+        tr.setAttribute("class", "danger");
+    } else if(availableCapacity >=5 && availableCapacity < 20) {
+        tr.setAttribute("class", "warning");
+    } else if(availableCapacity >= 20) {
+        tr.setAttribute("class", "success");
+    }
 }
 
 function httpGet(url) {
