@@ -17,20 +17,23 @@ $(document).ready(function() {
             let lines = processCsvData(data);
             populateSelect(lines);
         }
-    })
+    });
 });
 
-async function searchSlots(url) {
+var searching = false;
+var searchByDistrict = true;
+
+async function searchSlots() {
+    var url = getUrl();
     var oValues = getInputValues();
     const minSlots = oValues.userMinSlots;
     document.getElementById("available").innerHTML = "Checking availability for " + minSlots + " slots...";
-    $("#slotTable").show();
     var vaccines = oValues.selectedVaccines;
     var fees = oValues.selectedFeeType;
     var minAge = oValues.selectedMinAge;
     var response = httpGet(url);
     try {
-        var response = JSON.parse(response);
+        response = JSON.parse(response);
         response.centers.forEach(function(center) {
             if (center && center.sessions) {
                 if (fees.indexOf(center.fee_type) !== -1) {
@@ -54,23 +57,24 @@ async function searchSlots(url) {
     for (var i = 0; i < tableLength; i++) {
         document.getElementById("vaccine-table").deleteRow(1);
     }
-    searchSlots(url);
+    if(searching) {
+        searchSlots(url);
+    }
 };
 
 function checkSlots() {
-    var url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/";
-    var date = new Date().toLocaleDateString().replaceAll("/", "-");
-    if (document.getElementById("radio-district").checked) {
-        // if search is by district
-        var districtCode = document.getElementById("select-district").value;
-        url = url + "calendarByDistrict?district_id=" + districtCode;
+    searching = !searching;
+    $('#submit-button').toggleClass('btn-primary btn-danger');
+    if(searching) {
+        $("#available").show();
+        $("#slotTable").show();
+        document.getElementById("submit-button").innerHTML = "Stop Searching";
+        searchSlots();
     } else {
-        //if search is by pincode
-        var pinCode = document.getElementById("pin").value;
-        url = url + "calendarByPin?pincode=" + pinCode;
+        $("#available").hide();
+        $("#slotTable").hide();
+        document.getElementById("submit-button").innerHTML = "Start Searching";
     }
-    url = url + "&date=" + date;
-    searchSlots(url);
 }
 
 function processCsvData(allText) {
@@ -149,6 +153,25 @@ function getInputValues() {
     oValues.selectedFeeType = fees;
     oValues.selectedMinAge = minAge;
     return oValues;
+}
+
+function getUrl() {
+    var url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/";
+    var date = new Date().toLocaleDateString().replaceAll("/", "-");
+    if (document.getElementById("radio-district").checked) {
+        // if search is by district
+        var districtCode = document.getElementById("select-district").value;
+        url = url + "calendarByDistrict?district_id=" + districtCode;
+    } else {
+        //if search is by pincode
+        var pinCode = document.getElementById("pin").value;
+        url = url + "calendarByPin?pincode=" + pinCode;
+    }
+    if (!document.getElementById("radio-district").checked) {
+        searchByDistrict = false;
+    }
+    url = url + "&date=" + date;
+    return url;
 }
 
 function httpGet(url) {
