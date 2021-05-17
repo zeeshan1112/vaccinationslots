@@ -38,7 +38,7 @@ async function searchSlots() {
             if (center && center.sessions) {
                 if (fees.indexOf(center.fee_type) !== -1) {
                     center.sessions.forEach(function(session) {
-                        if (session.min_age_limit == minAge && session.available_capacity >= minSlots && vaccines.indexOf(session.vaccine) !== -1) {
+                        if (session.min_age_limit == minAge && session.available_capacity_dose1 >= minSlots && vaccines.indexOf(session.vaccine) !== -1) {
                             var audio = new Audio('https://media.geeksforgeeks.org/wp-content/uploads/20190531135120/beep.mp3');
                             audio.play();
                             var fee = center.vaccine_fees ? center.vaccine_fees[0].fee : 0;
